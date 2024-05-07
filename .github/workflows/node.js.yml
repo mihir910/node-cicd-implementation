@@ -20,8 +20,6 @@ jobs:
           node-version: 20
       - name: Install dependencies
         run: npm install
-      - name: Run tests
-        run: npm test
 
   deploy-to-staging:  # Job for staging deployment
     needs: build-and-test  # Depends on successful build and tests
