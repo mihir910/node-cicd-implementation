@@ -22,6 +22,7 @@ const createUser = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
+      message: "JAI SIYA RAM",
       user,
     });
   } catch (error) {
