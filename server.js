@@ -6,6 +6,7 @@ const cors = require("cors");
 const connectDB = require("./config/db");
 const userRoutes = require("./routes/users");
 const errorHandler = require("./middlewares/error");
+const path = require('path');
 
 
 // Connect to DB
@@ -26,6 +27,11 @@ app.use("/api/products", (req, res) => {
   return res.status(200).json({
     message: 'This is new feature change, a new route for products'
   })
+});
+
+// Index Route
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public/index.html'))
 });
 
 app.use(errorHandler);
