@@ -1,46 +1,28 @@
 # This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
 
-name: Node CI/CD Pipeline
+name: Node.js CI/CD
 
 on:
   push:
-    branches:
-      - staging  # Trigger on push to staging branch
-      # - production  # Trigger on push to production branch
+    branches: [ "staging" ]
 
-jobs:  
-  build-and-test:
-    runs-on: ubuntu-latest
+jobs:
+  build:
+    runs-on: self-hosted
+    strategy:
+      matrix:
+        node-version: [20.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
     steps:
-      - uses: actions/checkout@v3  # Checkout code from repository
-      - name: Use Node.js 20  # Install specific Node.js version
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 20
-
-  deploy-to-staging:  # Job for staging deployment
-    needs: build-and-test  # Depends on successful build and tests
-    runs-on: ubuntu-latest
-    if: ${{ github.ref == 'refs/heads/staging' }}  # Only deploy on staging push
-    environment:
-      name: staging
-      # Add more environment variables as needed
-    steps:
-      - uses: actions/checkout@v3
-      - name: Build production-ready artifact
-        # run: npm run build  # Or your build command for production
-      - name: Deploy to staging using SSH
-        uses: actions/deploy-ssh@v2
-        with:
-          host: ${{ secrets.DEPLOY_HOST }}  # Encrypted SSH host (secret)
-          user: ${{ secrets.DEPLOY_USER }}  # Encrypted SSH user (secret)
-          fingerprint: ${{ secrets.DEPLOY_SERVER_FINGERPRINT }}  # SSH server fingerprint (secret)
-          key: ${{ secrets.DEPLOY_SSH_KEY }}  # Encrypted SSH private key (secret)
-          path: '/var/www/node-cicd-implementation/'  # Remote path on server
-          branch: ${{ github.ref }}  # Deploy the pushed branch
-          commands: 
-          - git pull origin staging
-          - npm ci
-          - npm install
-          - pm2 restart 1
+    - uses: actions/checkout@v4
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    - run: npm ci
+    - run: |
+        touch .env
+        echo "${{ secrets.PROD_ENV_FILE }}" > .env
+    - run: pm2 restart BackendAPI
