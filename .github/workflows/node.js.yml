@@ -21,7 +21,7 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    - run: cd /var/www/node-cicd-implementation
+    # - run: cd /var/www/node-cicd-implementation
     - run: git pull origin master
     - run: npm install
     - run: npm install -g pm2
