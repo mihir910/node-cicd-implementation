@@ -21,6 +21,7 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
+    - run: git pull origin master
     - run: npm install
     - run: npm install -g pm2
     - run: |
