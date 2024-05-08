@@ -36,6 +36,12 @@ app.use("/api/ramram", (req, res) => {
   })
 });
 
+app.use("/api/siyaram", (req, res) => {
+  return res.status(200).json({
+    message: 'SIYA RAM SIYA RAM'
+  })
+});
+
 // Index Route
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public/index.html'))
